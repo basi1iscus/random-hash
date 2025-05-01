@@ -21,9 +21,10 @@ const (
 	SHA3   HashAlgorithm = "SHA-3"
 )
 
+type Hash map[HashAlgorithm]string
+
 type HashResult struct {
-	Algorithm HashAlgorithm
-	Hash      string
+	Hashes    Hash
 	Original  interface{}
 }
 
@@ -43,8 +44,8 @@ func NewHasher(algorithms ...HashAlgorithm) *Hasher {
 	}
 }
 
-func (h *Hasher) HashValue(value interface{}) ([]HashResult, error) {
-	results := make([]HashResult, 0, len(h.algorithms))
+func (h *Hasher) HashValue(value interface{}) (Hash, error) {
+	results := make(Hash, len(h.algorithms))
 
 	for _, alg := range h.algorithms {
 		var hasher hash.Hash
@@ -80,23 +81,22 @@ func (h *Hasher) HashValue(value interface{}) ([]HashResult, error) {
 		hashBytes := hasher.Sum(nil)
 		hashHex := hex.EncodeToString(hashBytes)
 
-		results = append(results, HashResult{
-			Algorithm: alg,
-			Hash:      hashHex,
-			Original:  value,
-		})
+		results[alg] = hashHex
 	}
 	return results, nil
 }
 
-func (h *Hasher) HashValues(values []interface{}) ([][]HashResult, error) {
-	results := make([][]HashResult, len(values))
+func (h *Hasher) HashValues(values []interface{}) ([]HashResult, error) {
+	results := make([]HashResult, len(values))
 	for i, value := range values {
-		hashResult, err := h.HashValue(value)
+		hashes, err := h.HashValue(value)
 		if err != nil {
 			return nil, err
 		}
-		results[i] = hashResult
+		results[i] = HashResult {
+			Original: value,
+			Hashes: hashes,
+		}
 	}
 
 	return results, nil

@@ -5,13 +5,12 @@ import (
 	"time"
 )
 
-type RandomValueType int
-
+type RandomValueType string
 const (
-	Integer RandomValueType = iota
-	Float
-	Mixed
-	String
+	Integer RandomValueType = "int"
+	Float RandomValueType = "float"
+	Mixed RandomValueType = "mixed"
+	String RandomValueType = "string"
 )
 
 const (
@@ -30,32 +29,25 @@ func NewGenerator() *RandomGenerator {
 	}
 }
 
-func (g *RandomGenerator) Generate(count int, valueType RandomValueType, min int, max int) []interface{} {
-	randoms := make([]interface{}, count)
+func (g *RandomGenerator) Generate(count int, valueType RandomValueType, min int, max int) []any {
+	randoms := make([]any, count)
 
 	for i := 0; i < count; i++ {
 		switch valueType {
 		case Integer:
 			randoms[i] = g.generateInt(min, max)
 		case Float:
-			randoms[i] = g.rnd.Float64() * float64(max)
+			randoms[i] = g.generateFloat(min, max)
 		case Mixed:
-			randoms[i] = func() interface{} {
+			randoms[i] = func() any {
 				if g.rnd.Intn(2) == 0 {
 					return g.generateInt(min, max)
 				} else {
-					return g.rnd.Float64() * float64(max)
+					return g.generateFloat(min, max)
 				}
-			}
+			}()
 		case String:
-			randoms[i] = func() []byte {
-				str := make([]byte, max)
-				length := g.generateInt(min, max)
-				for j := 0; j < length; j++ {
-					str[j] = byte(g.generateInt(firstChar, lastChar))
-				}
-				return str
-			}
+			randoms[i] = g.generateString(min, max)
 		}
 	}
 
@@ -64,4 +56,17 @@ func (g *RandomGenerator) Generate(count int, valueType RandomValueType, min int
 
 func (g *RandomGenerator) generateInt(min int, max int) int {
 	return g.rnd.Intn(max-min+1) + min
+}
+
+func (g *RandomGenerator) generateFloat(min int, max int) float64 {
+	return g.rnd.Float64()*float64(max-min+1) + float64(min)
+}
+
+func (g *RandomGenerator) generateString(min int, max int) string {
+	length := g.generateInt(min, max)
+	str := make([]byte, length)
+	for j := 0; j < length; j++ {
+		str[j] = byte(g.generateInt(firstChar, lastChar))
+	}
+	return string(str)
 }
