@@ -10,6 +10,7 @@ import (
 	"sync"
 )
 
+const BufferSize = 100
 type RandomHashOptions struct {
 	count     int
 	min       int
@@ -67,11 +68,9 @@ func complexityCounter(results []hasher.HashResult, alg hasher.HashAlgorithm, co
 func main() {
 	var options = getCommandlineOptions()
 
-	const buffer = 3
 	// Генерация случайных чисел
 	fmt.Println("Генерация", options.count, "случайных данных...")
-	gen := generator.NewGenerator()
-	channel := make(chan []hasher.HashResult, buffer)
+	channel := make(chan []hasher.HashResult, BufferSize)
 	restCount := options.count
 	var wg sync.WaitGroup
 	for i := 0; i < options.threads; i++ {
@@ -87,13 +86,14 @@ func main() {
 		// Запускаем в отдельных горутинах
 		go func(count int) {
 			defer wg.Done()
+			gen := generator.NewGenerator()
 			hasher := hasher.NewHasher(options.hashTypes...)
 			for count > 0 {
 				var batchSize int
-				if count < buffer {
+				if count < BufferSize {
 					batchSize = count
 				} else {
-					batchSize = buffer
+					batchSize = BufferSize
 				}
 				count -= batchSize
 				values := gen.Generate(batchSize, options.valueType, options.min, options.max)

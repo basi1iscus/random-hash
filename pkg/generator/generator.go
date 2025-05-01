@@ -55,7 +55,7 @@ func (g *RandomGenerator) Generate(count int, valueType RandomValueType, min int
 }
 
 func (g *RandomGenerator) generateInt(min int, max int) int {
-	return g.rnd.Intn(max-min+1) + min
+	return g.rnd.Intn(max - min + 1) + min
 }
 
 func (g *RandomGenerator) generateFloat(min int, max int) float64 {

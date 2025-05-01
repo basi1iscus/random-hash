@@ -41,7 +41,7 @@ This will generate 5000 random integers between 10 and 9999, hash them with SHA-
 
 Example usage:
 ```sh
-go run ./cmd/main.go --count=100000 --min=32 --max=32 --type=string --path=./results.txt --threads=4 --algs=SHA-256,SHA-512,MD5 --complexity=00
+go run ./cmd/main.go --count=100000 --min=32 --max=32 --type=string --out=file --path=./results.txt --threads=4 --algs=SHA-256,SHA-512,MD5 --complexity=00
 ```
 This will generate 100000 random 32 chars strings, hash them with SHA-256, SHA-512 and MD5 algorithms, and print results to the console and file, using 4 threads, count SHA-256 hashes started with 00.
 
