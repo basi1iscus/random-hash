@@ -59,7 +59,7 @@ func (g *RandomGenerator) generateInt(min int, max int) int {
 }
 
 func (g *RandomGenerator) generateFloat(min int, max int) float64 {
-	return g.rnd.Float64()*float64(max-min+1) + float64(min)
+	return g.rnd.Float64()*float64(max-min) + float64(min)
 }
 
 func (g *RandomGenerator) generateString(min int, max int) string {

@@ -93,7 +93,7 @@ func TestGenerateStrings(t *testing.T) {
 	}
 
 	for _, v := range values {
-		str, ok := v.([]byte)
+		str, ok := v.(string)
 		if !ok {
 			t.Fatalf("Expected value to be of type []byte, got %T", v)
 		}
